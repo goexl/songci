@@ -1,7 +1,8 @@
 package songci
 
 const (
-	rootPath    = "/"
-	contentType = "content-type"
-	host        = "host"
+	rootPath      = "/"
+	contentType   = "content-type"
+	host          = "host"
+	interrogation = "?"
 )

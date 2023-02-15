@@ -1,5 +1,9 @@
 package songci
 
+import (
+	"strings"
+)
+
 type zinanBuilder struct {
 	params *zinanParams
 }
@@ -10,19 +14,17 @@ func newZinanBuilder() *zinanBuilder {
 	}
 }
 
-func (zb *zinanBuilder) Get() *zinanBuilder {
+func (zb *zinanBuilder) Get(uri string) *zinanBuilder {
 	zb.params.method = methodGet
+	splits := strings.Split(uri, interrogation)
+	zb.params.uri = splits[0]
+	zb.params.query = splits[1]
 
 	return zb
 }
 
-func (zb *zinanBuilder) Post() *zinanBuilder {
+func (zb *zinanBuilder) Post(uri string) *zinanBuilder {
 	zb.params.method = methodPost
-
-	return zb
-}
-
-func (zb *zinanBuilder) Uri(uri string) *zinanBuilder {
 	zb.params.uri = uri
 
 	return zb
