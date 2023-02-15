@@ -14,3 +14,9 @@ func newBuilder(timeout time.Duration) *builder {
 		timeout: timeout,
 	}
 }
+
+func (b *builder) Timeout(timeout time.Duration) *builder {
+	b.timeout = timeout
+
+	return b
+}
