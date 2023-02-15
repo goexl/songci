@@ -9,7 +9,8 @@
 ![最佳语言](https://img.shields.io/github/languages/top/goexl/songci)
 ![星星个数](https://img.shields.io/github/stars/goexl/songci?style=social)
 
-一个Golang版本的签名及验证算法库
+一个Golang版本的签名及验证算法库，支持的签名算法有
+- `子南`算法，一个类似于`腾讯云`的签名算法
 
 ## 为什么叫宋慈
 

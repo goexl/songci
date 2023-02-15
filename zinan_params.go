@@ -1,5 +1,9 @@
 package songci
 
+import (
+	"strings"
+)
+
 type zinanParams struct {
 	method  string
 	uri     string
@@ -16,17 +20,29 @@ func newZinanParams() *zinanParams {
 	}
 }
 
-func (zp *zinanParams) validate() bool {
+func (zp *zinanParams) validate() (codes []int, validate bool) {
 	hasContentType := false
 	hasHost := false
-	for key := range zp.headers {
-		if contentType == key {
+	for key, value := range zp.headers {
+		newKey := strings.ToLower(key)
+		value = strings.ToLower(value)
+		if contentType == newKey {
 			hasContentType = true
 		}
 		if host == key {
 			hasHost = true
 		}
+		delete(zp.headers, key)
+		zp.headers[newKey] = value
 	}
 
-	return hasContentType && hasHost
+	validate = hasHost && hasContentType
+	if !hasContentType {
+		codes = append(codes, codeNoContentTypeHeader)
+	}
+	if !hasHost {
+		codes = append(codes, codeNoHostHeader)
+	}
+
+	return
 }
