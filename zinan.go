@@ -28,6 +28,10 @@ func newZinan(params *params, self *zinanParams) *zinan {
 	}
 }
 
+func (z *zinan) algorithm() string {
+	return z.params.zinan.name
+}
+
 func (z *zinan) unzip(token string) (codes []uint8) {
 	values := strings.Split(token, comma)
 	z.self.id = values[0]
