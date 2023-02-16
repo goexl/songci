@@ -14,10 +14,6 @@ func (m *maker) Make() (token string, codes []uint8) {
 	return m.authorizer.token()
 }
 
-func (m *maker) Algorithm() string {
-	return m.authorizer.algorithm()
-}
-
-func (m *maker) Algorithm() string {
-	return m.authorizer.algorithm()
+func (m *maker) Scheme() string {
+	return m.authorizer.scheme()
 }

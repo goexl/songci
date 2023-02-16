@@ -28,8 +28,8 @@ func newZinan(params *params, self *zinanParams) *zinan {
 	}
 }
 
-func (z *zinan) algorithm() string {
-	return z.params.zinan.name
+func (z *zinan) scheme() string {
+	return z.params.zinan.scheme
 }
 
 func (z *zinan) unzip(token string) (codes []uint8) {
@@ -78,7 +78,7 @@ func (z *zinan) sign() (signature string, codes []uint8) {
 
 	sign := new(strings.Builder)
 	// 写入算法名
-	sign.WriteString(z.params.zinan.name)
+	sign.WriteString(z.params.zinan.scheme)
 	sign.WriteString(enter)
 	// 写入时间戳
 	sign.WriteString(timestamp)

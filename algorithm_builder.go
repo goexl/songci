@@ -16,7 +16,7 @@ func newAlgorithmBuilder(builder *builder, algorithm *algorithm) *algorithmBuild
 }
 
 func (ab *algorithmBuilder) Name(name string) *algorithmBuilder {
-	ab.algorithm.name = name
+	ab.algorithm.scheme = name
 
 	return ab
 }

@@ -1,7 +1,7 @@
 package songci
 
 type authorizer interface {
-	algorithm() string
+	scheme() string
 
 	unzip(token string) (codes []uint8)
 

@@ -22,7 +22,7 @@ func newVerifier(params *params, self *verifierParams) *verifier {
 func (v *verifier) Verify(token string) (codes []uint8) {
 	values := strings.Split(token, space)
 	switch values[0] {
-	case v.params.zinan.name:
+	case v.params.zinan.scheme:
 		v.authorizer = newZinan(v.params, newZinanParams(v.self))
 	default:
 		codes = append(codes, codeNotImplement)

@@ -1,11 +1,11 @@
 package songci
 
 type algorithm struct {
-	name string
+	scheme string
 }
 
-func newAlgorithm(name string) *algorithm {
+func newAlgorithm(scheme string) *algorithm {
 	return &algorithm{
-		name: name,
+		scheme: scheme,
 	}
 }
