@@ -17,3 +17,7 @@ func (m *maker) Make() (token string, codes []uint8) {
 func (m *maker) Algorithm() string {
 	return m.authorizer.algorithm()
 }
+
+func (m *maker) Algorithm() string {
+	return m.authorizer.algorithm()
+}
