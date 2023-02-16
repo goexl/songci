@@ -11,10 +11,10 @@ func newSongci(params *params) *Songci {
 	}
 }
 
-func (s *Songci) Verifier(credential string) *verifierBuilder {
-	return newVerifierBuilder(s.params, credential)
+func (s *Songci) Verifier(getter getter) *verifierBuilder {
+	return newVerifierBuilder(s.params, getter)
 }
 
-func (s *Songci) Maker(credential string) *makerBuilder {
-	return newMakerBuilder(s.params, credential)
+func (s *Songci) Maker(id string, getter getter) *makerBuilder {
+	return newMakerBuilder(s.params, id, getter)
 }

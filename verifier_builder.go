@@ -7,12 +7,14 @@ import (
 type verifierBuilder struct {
 	params *params
 	self   *verifierParams
+	getter getter
 }
 
-func newVerifierBuilder(params *params, credential string) *verifierBuilder {
+func newVerifierBuilder(params *params, getter getter) *verifierBuilder {
 	return &verifierBuilder{
 		params: params,
-		self:   newVerifierParams(credential),
+		self:   newVerifierParams(),
+		getter: getter,
 	}
 }
 
@@ -64,5 +66,5 @@ func (vb *verifierBuilder) Payload(payload []byte) *verifierBuilder {
 }
 
 func (vb *verifierBuilder) Build() *verifier {
-	return newVerifier(vb.params, vb.self)
+	return newVerifier(vb.params, vb.self, vb.getter)
 }

@@ -9,13 +9,15 @@ import (
 type verifier struct {
 	params     *params
 	self       *verifierParams
+	getter     getter
 	authorizer authorizer
 }
 
-func newVerifier(params *params, self *verifierParams) *verifier {
+func newVerifier(params *params, self *verifierParams, getter getter) *verifier {
 	return &verifier{
 		params: params,
 		self:   self,
+		getter: getter,
 	}
 }
 
@@ -23,7 +25,7 @@ func (v *verifier) Verify(auth string) (codes []uint8) {
 	values := strings.Split(auth, space)
 	switch values[0] {
 	case v.params.zinan.scheme:
-		v.authorizer = newZinan(v.params, newZinanParams(v.self))
+		v.authorizer = newZinan(v.params, newZinanParams(v.self), v.getter)
 	default:
 		codes = append(codes, codeNotImplement)
 	}

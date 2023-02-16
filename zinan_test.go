@@ -15,8 +15,8 @@ func TestZinan(t *testing.T) {
 		"Content-Type": "application/json; charset=utf-8",
 		"Host":         host,
 	}
-	zinan := songci.New().Build().Maker(credential).Zinan().Get(uri).Headers(headers)
-	verifier := songci.New().Build().Verifier(credential).Get().Uri(uri).Headers(headers)
+	zinan := songci.New().Build().Maker(id, songci.NewStringGetter(credential)).Zinan().Get(uri).Headers(headers)
+	verifier := songci.New().Build().Verifier(songci.NewStringGetter(credential)).Get().Uri(uri).Headers(headers)
 	if auth, mc := zinan.Build().Auth(); nil != mc {
 		t.Errorf("签名测试未通过，密钥：%s，错误：%v", credential, mc)
 	} else if vc := verifier.Build().Verify(auth); nil != vc {

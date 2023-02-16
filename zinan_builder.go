@@ -7,12 +7,14 @@ import (
 type zinanBuilder struct {
 	params *params
 	self   *zinanParams
+	getter getter
 }
 
-func newZinanBuilder(params *params, credential string) *zinanBuilder {
+func newZinanBuilder(params *params, getter getter) *zinanBuilder {
 	return &zinanBuilder{
 		params: params,
-		self:   newZinanParams(newVerifierParams(credential)),
+		self:   newZinanParams(newVerifierParams()),
+		getter: getter,
 	}
 }
 
@@ -59,5 +61,5 @@ func (zb *zinanBuilder) Payload(payload []byte) *zinanBuilder {
 }
 
 func (zb *zinanBuilder) Build() *maker {
-	return newMaker(newZinan(zb.params, zb.self))
+	return newMaker(newZinan(zb.params, zb.self, zb.getter))
 }

@@ -15,16 +15,19 @@ var _ authorizer = (*zinan)(nil)
 type zinan struct {
 	params *params
 	self   *zinanParams
+	getter getter
 
 	scope      string
 	signed     string
 	_signature string
+	credential string
 }
 
-func newZinan(params *params, self *zinanParams) *zinan {
+func newZinan(params *params, self *zinanParams, getter getter) *zinan {
 	return &zinan{
 		params: params,
 		self:   self,
+		getter: getter,
 	}
 }
 
@@ -49,7 +52,14 @@ func (z *zinan) unzip(auth string) (codes []uint8) {
 }
 
 func (z *zinan) sign() (signature string, codes []uint8) {
-	if codes = z.self.validate(); nil != codes {
+	if vc := z.self.validate(); nil != vc {
+		codes = vc
+	} else if credential, err := z.getter.Get(z.self.id); nil != err {
+		codes = append(codes, codeGetCredentialError)
+	} else {
+		z.credential = credential
+	}
+	if nil != codes {
 		return
 	}
 
@@ -89,7 +99,7 @@ func (z *zinan) sign() (signature string, codes []uint8) {
 	// 写入请求
 	sign.WriteString(cryptor.New(request.String()).Sha256().Hex())
 
-	secret := cryptor.New(timestamp).Hmac(z.self.secret()).String()
+	secret := cryptor.New(timestamp).Hmac(z.self.secret(z.credential)).String()
 	service := cryptor.New(z.self.service).Hmac(secret).String()
 	signing := cryptor.New(z.self.request()).Hmac(service).String()
 	signature = cryptor.New(sign.String()).Hmac(signing).Hex()
