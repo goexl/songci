@@ -11,8 +11,8 @@ func newSongci(params *params) *Songci {
 	}
 }
 
-func (s *Songci) Verifier(credential string, token string) *verifierBuilder {
-	return newVerifierBuilder(token, s.params, credential)
+func (s *Songci) Verifier(credential string) *verifierBuilder {
+	return newVerifierBuilder(s.params, credential)
 }
 
 func (s *Songci) Maker(credential string) *makerBuilder {

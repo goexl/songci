@@ -1,11 +1,8 @@
 package songci
 
-import (
-	"time"
-)
-
 var _ = New
 
+// New 创建新签名器
 func New() *builder {
-	return newBuilder(5 * time.Minute)
+	return newBuilder()
 }

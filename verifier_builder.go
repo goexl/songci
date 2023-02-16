@@ -5,30 +5,42 @@ import (
 )
 
 type verifierBuilder struct {
-	token  string
 	params *params
 	self   *verifierParams
 }
 
-func newVerifierBuilder(token string, params *params, credential string) *verifierBuilder {
+func newVerifierBuilder(params *params, credential string) *verifierBuilder {
 	return &verifierBuilder{
-		token:  token,
 		params: params,
 		self:   newVerifierParams(credential),
 	}
 }
 
-func (vb *verifierBuilder) method(method string) *verifierBuilder {
+func (vb *verifierBuilder) Method(method string) *verifierBuilder {
 	vb.self.method = strings.ToUpper(method)
+
+	return vb
+}
+
+func (vb *verifierBuilder) Get() *verifierBuilder {
+	vb.self.method = methodGet
+
+	return vb
+}
+
+func (vb *verifierBuilder) Post() *verifierBuilder {
+	vb.self.method = methodPost
 
 	return vb
 }
 
 func (vb *verifierBuilder) Uri(uri string) *verifierBuilder {
 	vb.self.method = methodGet
-	splits := strings.Split(uri, interrogation)
-	vb.self.uri = splits[0]
-	vb.self.query = splits[1]
+	values := strings.Split(uri, interrogation)
+	vb.self.uri = values[0]
+	if 2 == len(values) {
+		vb.self.query = values[1]
+	}
 
 	return vb
 }
@@ -52,5 +64,5 @@ func (vb *verifierBuilder) Payload(payload []byte) *verifierBuilder {
 }
 
 func (vb *verifierBuilder) Build() *verifier {
-	return newVerifier(vb.token, vb.params, vb.self)
+	return newVerifier(vb.params, vb.self)
 }

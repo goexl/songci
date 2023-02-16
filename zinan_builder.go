@@ -18,18 +18,18 @@ func newZinanBuilder(params *params, credential string) *zinanBuilder {
 
 func (zb *zinanBuilder) Get(uri string) *zinanBuilder {
 	zb.self.method = methodGet
-	splits := strings.Split(uri, interrogation)
-	zb.self.uri = splits[0]
-	zb.self.query = splits[1]
+	values := strings.Split(uri, interrogation)
+	zb.self.uri = values[0]
+	if 2 == len(values) {
+		zb.self.query = values[1]
+	}
 
 	return zb
 }
 
 func (zb *zinanBuilder) Post(uri string) *zinanBuilder {
 	zb.self.method = methodPost
-	splits := strings.Split(uri, interrogation)
-	zb.self.uri = splits[0]
-	zb.self.query = splits[1]
+	zb.self.uri = uri
 
 	return zb
 }

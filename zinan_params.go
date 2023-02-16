@@ -34,7 +34,7 @@ func newZinanParams(params *verifierParams) *zinanParams {
 func (zp *zinanParams) secret() (final string) {
 	sb := new(strings.Builder)
 	sb.WriteString(strings.ToUpper(zp.product))
-	sb.WriteString(fmt.Sprintf("%d", zp.version))
+	sb.WriteString(zp.version)
 	sb.WriteString(zp.credential)
 
 	return
@@ -44,7 +44,7 @@ func (zp *zinanParams) request() (final string) {
 	sb := new(strings.Builder)
 	sb.WriteString(strings.ToLower(zp.product))
 	sb.WriteString(underline)
-	sb.WriteString(fmt.Sprintf("%d", zp.version))
+	sb.WriteString(zp.version)
 	sb.WriteString(underline)
 	sb.WriteString(request)
 
