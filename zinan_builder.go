@@ -8,7 +8,7 @@ type zinanBuilder struct {
 	params *zinanParams
 }
 
-func newZinanBuilder() *zinanBuilder {
+func newZinanBuilder(secret string) *zinanBuilder {
 	return &zinanBuilder{
 		params: newZinanParams(),
 	}
@@ -48,6 +48,6 @@ func (zb *zinanBuilder) Payload(payload []byte) *zinanBuilder {
 	return zb
 }
 
-func (zb *zinanBuilder) Verifier() Verifier {
+func (zb *zinanBuilder) Verifier() *verifier {
 	return newZinanVerifier(zb.params)
 }

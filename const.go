@@ -11,4 +11,6 @@ const (
 	underline     = "_"
 	comma         = ","
 	equal         = "="
+	slash         = "/"
+	unknown       = "unknown"
 )

@@ -19,3 +19,11 @@ func (b *builder) Timeout(timeout time.Duration) *builder {
 
 	return b
 }
+
+func (b *builder) Zinan() *algorithmBuilder {
+	return newAlgorithmBuilder(b, b.params.zinan)
+}
+
+func (b *builder) Build() *Songci {
+	return newSongci(b.params)
+}

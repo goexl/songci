@@ -2,10 +2,12 @@ package songci
 
 import (
 	"fmt"
+	"math"
 	"strings"
 	"time"
 
 	"github.com/goexl/cryptor"
+	"github.com/goexl/gox"
 )
 
 var _ authorizer = (*zinan)(nil)
@@ -14,15 +16,35 @@ type zinan struct {
 	params *params
 	self   *zinanParams
 
-	scope  string
-	signed string
+	scope      string
+	signed     string
+	_signature string
 }
 
-func (z *zinan) sign() (signature string, err error) {
-	timestamp := time.Now().Unix()
+func (z *zinan) unzip(token string) (codes []uint8) {
+	values := strings.Split(token, comma)
+	z.self.id = values[0]
+	if _codes := z.self.unzipScope(values[1]); nil != _codes {
+		codes = _codes
+	} else {
+		timestamp := time.Unix(z.self.timestamp, 0)
+		checked := time.Duration(math.Abs(float64(time.Now().Sub(timestamp)))) <= z.params.timeout
+		codes = gox.If(!checked, append(codes, codeTimeout))
+		z.self.unzipSigned(values[2])
+		z._signature = values[3]
+	}
+
+	return
+}
+
+func (z *zinan) sign() (signature string, codes []uint8) {
+	if codes = z.self.validate(); nil != codes {
+		return
+	}
+
+	timestamp := fmt.Sprintf("%d", z.self.timestamp)
 	z.signed = z.self.signed()
-	date := time.Unix(timestamp, 0).UTC().Format("2006-01-02")
-	z.scope = z.self.scope(date)
+	z.scope = z.self.scope()
 
 	request := new(strings.Builder)
 	// 写入方法
@@ -45,10 +67,10 @@ func (z *zinan) sign() (signature string, err error) {
 
 	sign := new(strings.Builder)
 	// 写入算法名
-	sign.WriteString(z.self.algorithm)
+	sign.WriteString(z.params.zinan.name)
 	sign.WriteString(enter)
 	// 写入时间戳
-	sign.WriteString(fmt.Sprintf("%d", timestamp))
+	sign.WriteString(timestamp)
 	sign.WriteString(enter)
 	// 写入作用域
 	sign.WriteString(z.scope)
@@ -56,7 +78,7 @@ func (z *zinan) sign() (signature string, err error) {
 	// 写入请求
 	sign.WriteString(cryptor.New(request.String()).Sha256().Hex())
 
-	secret := cryptor.New(date).Hmac(z.self.secret()).String()
+	secret := cryptor.New(timestamp).Hmac(z.self.secret()).String()
 	service := cryptor.New(z.self.service).Hmac(secret).String()
 	signing := cryptor.New(z.self.request()).Hmac(service).String()
 	signature = cryptor.New(sign.String()).Hmac(signing).Hex()
@@ -64,10 +86,10 @@ func (z *zinan) sign() (signature string, err error) {
 	return
 }
 
-func (z *zinan) authorize() (authorize string, err error) {
+func (z *zinan) token() (token string, codes []uint8) {
 	sb := new(strings.Builder)
-	if signature, se := z.sign(); nil != se {
-		err = se
+	if signature, _codes := z.sign(); nil != _codes {
+		codes = _codes
 	} else {
 		// 写入应用编号
 		sb.WriteString(z.self.id)
@@ -80,8 +102,12 @@ func (z *zinan) authorize() (authorize string, err error) {
 		sb.WriteString(comma)
 		// 写入签名值
 		sb.WriteString(signature)
-		authorize = sb.String()
+		token = sb.String()
 	}
 
 	return
+}
+
+func (z *zinan) signature() string {
+	return z._signature
 }

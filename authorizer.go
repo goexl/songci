@@ -1,7 +1,11 @@
 package songci
 
 type authorizer interface {
-	sign() (signature string, err error)
+	unzip(token string) (codes []uint8)
 
-	authorize() (authorize string, err error)
+	sign() (signature string, codes []uint8)
+
+	token() (token string, codes []uint8)
+
+	signature() string
 }

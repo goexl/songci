@@ -5,12 +5,15 @@ import (
 )
 
 type params struct {
-	// 超时
 	timeout time.Duration
+	zinan   *algorithm
+	basic   *algorithm
 }
 
 func newParams() *params {
 	return &params{
 		timeout: 5 * time.Minute,
+		zinan:   newAlgorithm(zinanName),
+		basic:   newAlgorithm(basicName),
 	}
 }

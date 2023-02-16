@@ -3,16 +3,17 @@ package songci
 import (
 	"fmt"
 	"sort"
+	"strconv"
 	"strings"
+	"time"
 )
 
 type zinanParams struct {
-	algorithm string
 	id        string
 	_secret   string
 	service   string
 	product   string
-	version   int
+	version   string
 	method    string
 	uri       string
 	query     string
@@ -20,25 +21,24 @@ type zinanParams struct {
 	processed headers
 	_signed   []string
 	payload   []byte
+	timestamp int64
 }
 
 func newZinanParams() *zinanParams {
 	return &zinanParams{
-		algorithm: zinanName,
 		method:    methodPost,
+		product:   unknown,
+		version:   "1",
 		uri:       rootPath,
 		original:  make(map[string]string),
+		timestamp: time.Now().Unix(),
 	}
 }
 
 func (zp *zinanParams) secret() (final string) {
 	sb := new(strings.Builder)
-	if "" != zp.product {
-		sb.WriteString(strings.ToUpper(zp.product))
-	}
-	if 0 != zp.version {
-		sb.WriteString(fmt.Sprintf("%d", zp.version))
-	}
+	sb.WriteString(strings.ToUpper(zp.product))
+	sb.WriteString(fmt.Sprintf("%d", zp.version))
 	sb.WriteString(zp._secret)
 
 	return
@@ -46,20 +46,43 @@ func (zp *zinanParams) secret() (final string) {
 
 func (zp *zinanParams) request() (final string) {
 	sb := new(strings.Builder)
-	if "" != zp.product {
-		sb.WriteString(strings.ToLower(zp.product))
-	}
-	if 0 != zp.version {
-		sb.WriteString(fmt.Sprintf("%d", zp.version))
-	}
+	sb.WriteString(strings.ToLower(zp.product))
+	sb.WriteString(underline)
+	sb.WriteString(fmt.Sprintf("%d", zp.version))
 	sb.WriteString(underline)
 	sb.WriteString(request)
 
 	return
 }
 
-func (zp *zinanParams) scope(date string) string {
-	return fmt.Sprintf("%s/%s/%s", date, zp.service, zp.request())
+func (zp *zinanParams) unzipRequest(request string) {
+	values := strings.Split(request, underline)
+	zp.product = values[0]
+	zp.version = values[1]
+}
+
+func (zp *zinanParams) scope() string {
+	sb := new(strings.Builder)
+	sb.WriteString(fmt.Sprintf("%d", zp.timestamp))
+	sb.WriteString(slash)
+	sb.WriteString(zp.service)
+	sb.WriteString(slash)
+	sb.WriteString(zp.request())
+
+	return sb.String()
+}
+
+func (zp *zinanParams) unzipScope(scope string) (codes []uint8) {
+	values := strings.Split(scope, slash)
+	if number, pe := strconv.ParseInt(values[0], 10, 64); nil != pe {
+		codes = append(codes, codeTimestampFormatError)
+	} else {
+		zp.timestamp = number
+		zp.service = values[1]
+		zp.unzipRequest(values[2])
+	}
+
+	return
 }
 
 func (zp *zinanParams) headers() (headers string) {
@@ -87,7 +110,11 @@ func (zp *zinanParams) signed() (signed string) {
 	return
 }
 
-func (zp *zinanParams) validate() (codes []int, validate bool) {
+func (zp *zinanParams) unzipSigned(signed string) {
+	zp._signed = strings.Split(signed, semicolon)
+}
+
+func (zp *zinanParams) validate() (codes []uint8) {
 	hasContentType := false
 	hasHost := false
 	zp.processed = make(headers, len(zp.original))
@@ -102,7 +129,6 @@ func (zp *zinanParams) validate() (codes []int, validate bool) {
 		zp.processed[newKey] = value
 	}
 
-	validate = hasHost && hasContentType
 	if !hasContentType {
 		codes = append(codes, codeNoContentTypeHeader)
 	}
