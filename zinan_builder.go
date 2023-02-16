@@ -31,13 +31,13 @@ func (zb *zinanBuilder) Post(uri string) *zinanBuilder {
 }
 
 func (zb *zinanBuilder) Header(key string, value string) *zinanBuilder {
-	zb.params.headers[key] = value
+	zb.params.original[key] = value
 
 	return zb
 }
 
 func (zb *zinanBuilder) Headers(headers map[string]string) *zinanBuilder {
-	zb.params.headers = headers
+	zb.params.original = headers
 
 	return zb
 }

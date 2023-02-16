@@ -5,18 +5,17 @@ import (
 )
 
 type builder struct {
-	// 超时
-	timeout time.Duration
+	params *params
 }
 
-func newBuilder(timeout time.Duration) *builder {
+func newBuilder() *builder {
 	return &builder{
-		timeout: timeout,
+		params: newParams(),
 	}
 }
 
 func (b *builder) Timeout(timeout time.Duration) *builder {
-	b.timeout = timeout
+	b.params.timeout = timeout
 
 	return b
 }
