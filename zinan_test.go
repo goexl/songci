@@ -17,9 +17,9 @@ func TestZinan(t *testing.T) {
 	}
 	zinan := songci.New().Build().Maker(credential).Zinan().Get(uri).Headers(headers)
 	verifier := songci.New().Build().Verifier(credential).Get().Uri(uri).Headers(headers)
-	if token, mc := zinan.Build().Make(); nil != mc {
+	if auth, mc := zinan.Build().Auth(); nil != mc {
 		t.Errorf("签名测试未通过，密钥：%s，错误：%v", credential, mc)
-	} else if vc := verifier.Build().Verify(token); nil != vc {
+	} else if vc := verifier.Build().Verify(auth); nil != vc {
 		t.Errorf("验签测试未通过，密钥：%s，错误：%v", credential, vc)
 	}
 }

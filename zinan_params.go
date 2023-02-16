@@ -26,6 +26,7 @@ func newZinanParams(params *verifierParams) *zinanParams {
 		verifierParams: params,
 
 		product:   unknown,
+		service:   unknown,
 		version:   "1",
 		timestamp: time.Now().Unix(),
 	}
@@ -40,7 +41,7 @@ func (zp *zinanParams) secret() (final string) {
 	return
 }
 
-func (zp *zinanParams) request() (final string) {
+func (zp *zinanParams) request() string {
 	sb := new(strings.Builder)
 	sb.WriteString(strings.ToLower(zp.product))
 	sb.WriteString(underline)
@@ -48,7 +49,7 @@ func (zp *zinanParams) request() (final string) {
 	sb.WriteString(underline)
 	sb.WriteString(request)
 
-	return
+	return sb.String()
 }
 
 func (zp *zinanParams) unzipRequest(request string) {

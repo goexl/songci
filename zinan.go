@@ -32,8 +32,8 @@ func (z *zinan) scheme() string {
 	return z.params.zinan.scheme
 }
 
-func (z *zinan) unzip(token string) (codes []uint8) {
-	values := strings.Split(token, comma)
+func (z *zinan) unzip(auth string) (codes []uint8) {
+	values := strings.Split(auth, comma)
 	z.self.id = values[0]
 	if _codes := z.self.unzipScope(values[1]); nil != _codes {
 		codes = _codes
