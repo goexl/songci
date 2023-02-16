@@ -13,4 +13,5 @@ const (
 	equal         = "="
 	slash         = "/"
 	unknown       = "unknown"
+	space         = " "
 )

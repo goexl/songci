@@ -11,6 +11,6 @@ func newSongci(params *params) *Songci {
 	}
 }
 
-func (s *Songci) Zinan(secret string) *zinanBuilder {
-
+func (s *Songci) Verifier(credential string, token string) *verifierBuilder {
+	return newVerifierBuilder(token, s.params, credential)
 }

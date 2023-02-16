@@ -21,6 +21,13 @@ type zinan struct {
 	_signature string
 }
 
+func newZinan(params *params, self *zinanParams) *zinan {
+	return &zinan{
+		params: params,
+		self:   self,
+	}
+}
+
 func (z *zinan) unzip(token string) (codes []uint8) {
 	values := strings.Split(token, comma)
 	z.self.id = values[0]

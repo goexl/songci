@@ -9,28 +9,24 @@ import (
 )
 
 type zinanParams struct {
+	*verifierParams
+
 	id        string
-	_secret   string
 	service   string
 	product   string
 	version   string
-	method    string
-	uri       string
-	query     string
-	original  headers
 	processed headers
 	_signed   []string
 	payload   []byte
 	timestamp int64
 }
 
-func newZinanParams() *zinanParams {
+func newZinanParams(params *verifierParams) *zinanParams {
 	return &zinanParams{
-		method:    methodPost,
+		verifierParams: params,
+
 		product:   unknown,
 		version:   "1",
-		uri:       rootPath,
-		original:  make(map[string]string),
 		timestamp: time.Now().Unix(),
 	}
 }
@@ -39,7 +35,7 @@ func (zp *zinanParams) secret() (final string) {
 	sb := new(strings.Builder)
 	sb.WriteString(strings.ToUpper(zp.product))
 	sb.WriteString(fmt.Sprintf("%d", zp.version))
-	sb.WriteString(zp._secret)
+	sb.WriteString(zp.credential)
 
 	return
 }
@@ -117,8 +113,8 @@ func (zp *zinanParams) unzipSigned(signed string) {
 func (zp *zinanParams) validate() (codes []uint8) {
 	hasContentType := false
 	hasHost := false
-	zp.processed = make(headers, len(zp.original))
-	for key, value := range zp.original {
+	zp.processed = make(headers, len(zp.verifierParams.headers))
+	for key, value := range zp.verifierParams.headers {
 		newKey := strings.ToLower(key)
 		if contentType == newKey {
 			hasContentType = true
