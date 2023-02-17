@@ -2,7 +2,6 @@ package songci
 
 import (
 	"fmt"
-	"math"
 	"strings"
 	"time"
 
@@ -44,7 +43,7 @@ func (z *zinan) unzip(auth string) (codes []uint8) {
 		codes = _codes
 	} else {
 		timestamp := time.Unix(z.self.timestamp, 0)
-		checked := time.Duration(math.Abs(float64(time.Now().Sub(timestamp)))) <= z.params.timeout
+		checked := time.Since(timestamp).Abs() <= z.params.timeout
 		codes = gox.If(!checked, append(codes, codeTimeout))
 		z.self.unzipSigned(values[2])
 		z.finalSignature = values[3]
