@@ -18,7 +18,7 @@ func newSigner(core *coreParams, authorizer authorizer) *signer {
 }
 
 func (s *signer) Credential() (string, []uint8) {
-	return s.authorizer.credential()
+	return s.authorizer.token()
 }
 
 func (s *signer) Scheme() string {

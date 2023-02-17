@@ -112,7 +112,7 @@ func (z *zinan) sign() (signature string, codes []uint8) {
 	return
 }
 
-func (z *zinan) credential() (token string, codes []uint8) {
+func (z *zinan) token() (token string, codes []uint8) {
 	sb := new(strings.Builder)
 	if signature, _codes := z.sign(); nil != _codes {
 		codes = _codes
