@@ -17,11 +17,11 @@ func newZinanBuilder(params *params, core *coreParams, getter getter) *zinanBuil
 }
 
 func (zb *zinanBuilder) Signed(headers ...string) *zinanBuilder {
-	zb.self._signed = append(zb.self._signed, headers...)
+	zb.self.signed = append(zb.self.signed, headers...)
 
 	return zb
 }
 
-func (zb *zinanBuilder) Build() *maker {
-	return newMaker(zb.core, newZinan(zb.params, zb.core, zb.self, zb.getter))
+func (zb *zinanBuilder) Build() *signer {
+	return newSigner(zb.core, newZinan(zb.params, zb.core, zb.self, zb.getter))
 }

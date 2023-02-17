@@ -15,9 +15,9 @@ func (s *Songci) Verifier(getter getter) *verifierBuilder {
 	return newVerifierBuilder(s.params, getter)
 }
 
-func (s *Songci) Maker(id string, getter getter) (mb *makerBuilder) {
+func (s *Songci) Singer(id string, getter getter) (sb *signerBuilder) {
 	s.params.id = id
-	mb = newMakerBuilder(s.params, getter)
+	sb = newSignerBuilder(s.params, getter)
 
 	return
 }

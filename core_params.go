@@ -3,8 +3,7 @@ package songci
 type coreParams struct {
 	host    string
 	method  string
-	url     string
-	query   string
+	uri     string
 	headers headers
 	payload []byte
 }

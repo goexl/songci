@@ -37,12 +37,7 @@ func (vb *verifierBuilder) Post() *verifierBuilder {
 }
 
 func (vb *verifierBuilder) Uri(uri string) *verifierBuilder {
-	vb.core.method = methodGet
-	values := strings.Split(uri, interrogation)
-	vb.core.url = values[0]
-	if 2 == len(values) {
-		vb.core.query = values[1]
-	}
+	vb.core.uri = uri
 
 	return vb
 }

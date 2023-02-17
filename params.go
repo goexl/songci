@@ -20,7 +20,7 @@ func newParams() *params {
 		zinan:   newAlgorithm(zinanName),
 		basic:   newAlgorithm(basicName),
 
-		product: unknown,
-		service: unknown,
+		product: product,
+		service: service,
 	}
 }

@@ -1,6 +1,6 @@
 package songci
 
 const (
-	zinanName = "ZINAN"
+	zinanName = "Zinan"
 	basicName = "Basic"
 )

@@ -13,7 +13,7 @@ type zinanParams struct {
 	params    *params
 	version   string
 	processed headers
-	_signed   []string
+	signed    []string
 	payload   []byte
 	timestamp int64
 }
@@ -23,13 +23,14 @@ func newZinanParams(params *params, core *coreParams) *zinanParams {
 		core:      core,
 		params:    params,
 		version:   "1",
+		signed:    []string{contentType, host},
 		timestamp: time.Now().Unix(),
 	}
 }
 
 func (zp *zinanParams) secret(credential string) string {
 	sb := new(strings.Builder)
-	sb.WriteString(strings.ToUpper(zp.params.product))
+	sb.WriteString(zp.params.product)
 	sb.WriteString(zp.version)
 	sb.WriteString(credential)
 
@@ -38,7 +39,7 @@ func (zp *zinanParams) secret(credential string) string {
 
 func (zp *zinanParams) request() string {
 	sb := new(strings.Builder)
-	sb.WriteString(strings.ToLower(zp.params.product))
+	sb.WriteString(zp.params.service)
 	sb.WriteString(underline)
 	sb.WriteString(zp.version)
 	sb.WriteString(underline)
@@ -49,7 +50,7 @@ func (zp *zinanParams) request() string {
 
 func (zp *zinanParams) unzipRequest(request string) {
 	values := strings.Split(request, underline)
-	zp.params.product = values[0]
+	zp.params.service = values[0]
 	zp.version = values[1]
 }
 
@@ -57,7 +58,7 @@ func (zp *zinanParams) scope() string {
 	sb := new(strings.Builder)
 	sb.WriteString(fmt.Sprintf("%d", zp.timestamp))
 	sb.WriteString(slash)
-	sb.WriteString(zp.params.service)
+	sb.WriteString(zp.params.product)
 	sb.WriteString(slash)
 	sb.WriteString(zp.request())
 
@@ -70,7 +71,7 @@ func (zp *zinanParams) unzipScope(scope string) (codes []uint8) {
 		codes = append(codes, codeTimestampFormatError)
 	} else {
 		zp.timestamp = number
-		zp.params.service = values[1]
+		zp.params.product = values[1]
 		zp.unzipRequest(values[2])
 	}
 
@@ -95,15 +96,15 @@ func (zp *zinanParams) processedHeaders() (headers string) {
 	return sb.String()[:sb.Len()-1]
 }
 
-func (zp *zinanParams) signed() (signed string) {
-	sort.Strings(zp._signed)
-	signed = strings.Join(zp._signed, semicolon)
+func (zp *zinanParams) signedHeaders() (signed string) {
+	sort.Strings(zp.signed)
+	signed = strings.Join(zp.signed, semicolon)
 
 	return
 }
 
 func (zp *zinanParams) unzipSigned(signed string) {
-	zp._signed = strings.Split(signed, semicolon)
+	zp.signed = strings.Split(signed, semicolon)
 }
 
 func (zp *zinanParams) validate() (codes []uint8) {

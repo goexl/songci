@@ -1,7 +1,8 @@
 package songci
 
 const (
-	rootPath      = "/"
+	product       = "product"
+	service       = "service"
 	contentType   = "content-type"
 	host          = "host"
 	interrogation = "?"
@@ -12,6 +13,6 @@ const (
 	comma         = ","
 	equal         = "="
 	slash         = "/"
-	unknown       = "unknown"
 	space         = " "
+	authorization = "Authorization"
 )
