@@ -54,7 +54,7 @@ func (z *zinan) unzip(auth string) (codes []uint8) {
 func (z *zinan) sign() (signature string, codes []uint8) {
 	if vc := z.self.validate(); nil != vc {
 		codes = vc
-	} else if credential, err := z.getter.Get(z.self.id); nil != err {
+	} else if credential, err := z.getter.Get(z.params.zinan.scheme, z.self.id); nil != err {
 		codes = append(codes, codeGetCredentialError)
 	} else {
 		z.credential = credential
