@@ -9,5 +9,5 @@ type authorizer interface {
 
 	token() (token string, codes []uint8)
 
-	signature() string
+	check(signature string) bool
 }

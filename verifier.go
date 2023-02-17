@@ -40,7 +40,7 @@ func (v *verifier) Verify(authorization string) (product string, service string,
 	} else {
 		product = v.params.product
 		service = v.params.service
-		codes = gox.If(signature != v.authorizer.signature(), append(codes, codeSignatureError))
+		codes = gox.If(!v.authorizer.check(signature), append(codes, codeSignatureError))
 	}
 
 	return

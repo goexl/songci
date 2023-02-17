@@ -18,10 +18,10 @@ type zinan struct {
 	self   *zinanParams
 	getter getter
 
-	scope          string
-	signedHeaders  string
-	finalSignature string
-	secret         string
+	scope     string
+	signed    string
+	signature string
+	secret    string
 }
 
 func newZinan(params *params, core *coreParams, self *zinanParams, getter getter) *zinan {
@@ -47,7 +47,7 @@ func (z *zinan) resolve(authorization string) (codes []uint8) {
 		checked := time.Since(timestamp).Abs() <= z.params.timeout
 		codes = gox.If(!checked, append(codes, codeTimeout))
 		z.self.resolveSigned(values[2])
-		z.finalSignature = values[3]
+		z.signature = values[3]
 	}
 
 	return
@@ -66,7 +66,7 @@ func (z *zinan) sign() (signature string, codes []uint8) {
 	}
 
 	timestamp := fmt.Sprintf("%d", z.self.timestamp)
-	z.signedHeaders = z.self.signedHeaders()
+	z.signed = z.self.signedHeaders()
 	z.scope = z.self.scope()
 
 	req := new(strings.Builder)
@@ -86,7 +86,7 @@ func (z *zinan) sign() (signature string, codes []uint8) {
 	req.WriteString(z.self.processedHeaders())
 	req.WriteString(enter)
 	// 写入签名头
-	req.WriteString(z.signedHeaders)
+	req.WriteString(z.signed)
 	req.WriteString(enter)
 	// 写入有效荷载
 	req.WriteString(cryptor.New(z.self.payload).Sha256().Hex())
@@ -124,7 +124,7 @@ func (z *zinan) token() (token string, codes []uint8) {
 		sb.WriteString(z.scope)
 		sb.WriteString(comma)
 		// 写入签名头
-		sb.WriteString(z.signedHeaders)
+		sb.WriteString(z.signed)
 		sb.WriteString(comma)
 		// 写入签名值
 		sb.WriteString(signature)
@@ -134,6 +134,6 @@ func (z *zinan) token() (token string, codes []uint8) {
 	return
 }
 
-func (z *zinan) signature() string {
-	return z.finalSignature
+func (z *zinan) check(signature string) bool {
+	return signature == z.signature
 }
