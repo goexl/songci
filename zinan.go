@@ -2,6 +2,7 @@ package songci
 
 import (
 	"fmt"
+	"net/url"
 	"strings"
 	"time"
 
@@ -78,7 +79,7 @@ func (z *zinan) sign() (signature string, codes []uint8) {
 	req.WriteString(enter)
 	if 2 == len(values) {
 		// 写入查询参数
-		req.WriteString(values[1])
+		req.WriteString(url.QueryEscape(values[1]))
 		req.WriteString(enter)
 	}
 	// 写入头
