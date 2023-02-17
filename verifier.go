@@ -8,24 +8,24 @@ import (
 
 type verifier struct {
 	params     *params
-	self       *verifierParams
+	core       *coreParams
 	getter     getter
 	authorizer authorizer
 }
 
-func newVerifier(params *params, self *verifierParams, getter getter) *verifier {
+func newVerifier(params *params, core *coreParams, getter getter) *verifier {
 	return &verifier{
 		params: params,
-		self:   self,
+		core:   core,
 		getter: getter,
 	}
 }
 
-func (v *verifier) Verify(auth string) (codes []uint8) {
+func (v *verifier) Verify(auth string) (product string, service string, codes []uint8) {
 	values := strings.Split(auth, space)
 	switch values[0] {
 	case v.params.zinan.scheme:
-		v.authorizer = newZinan(v.params, newZinanParams(v.self), v.getter)
+		v.authorizer = newZinan(v.params, v.core, newZinanParams(v.params, v.core), v.getter)
 	default:
 		codes = append(codes, codeNotImplement)
 	}
@@ -38,6 +38,8 @@ func (v *verifier) Verify(auth string) (codes []uint8) {
 	} else if signature, sc := v.authorizer.sign(); nil != sc {
 		codes = sc
 	} else {
+		product = v.params.product
+		service = v.params.service
 		codes = gox.If(signature != v.authorizer.signature(), append(codes, codeSignatureError))
 	}
 

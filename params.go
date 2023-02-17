@@ -8,6 +8,10 @@ type params struct {
 	timeout time.Duration
 	zinan   *algorithm
 	basic   *algorithm
+
+	id      string
+	product string
+	service string
 }
 
 func newParams() *params {
@@ -15,5 +19,8 @@ func newParams() *params {
 		timeout: 5 * time.Minute,
 		zinan:   newAlgorithm(zinanName),
 		basic:   newAlgorithm(basicName),
+
+		product: unknown,
+		service: unknown,
 	}
 }

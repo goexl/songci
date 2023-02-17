@@ -14,6 +14,7 @@ var _ authorizer = (*zinan)(nil)
 
 type zinan struct {
 	params *params
+	core   *coreParams
 	self   *zinanParams
 	getter getter
 
@@ -23,9 +24,10 @@ type zinan struct {
 	credential string
 }
 
-func newZinan(params *params, self *zinanParams, getter getter) *zinan {
+func newZinan(params *params, core *coreParams, self *zinanParams, getter getter) *zinan {
 	return &zinan{
 		params: params,
+		core:   core,
 		self:   self,
 		getter: getter,
 	}
@@ -37,7 +39,7 @@ func (z *zinan) scheme() string {
 
 func (z *zinan) unzip(auth string) (codes []uint8) {
 	values := strings.Split(auth, comma)
-	z.self.id = values[0]
+	z.params.id = values[0]
 	if _codes := z.self.unzipScope(values[1]); nil != _codes {
 		codes = _codes
 	} else {
@@ -54,7 +56,7 @@ func (z *zinan) unzip(auth string) (codes []uint8) {
 func (z *zinan) sign() (signature string, codes []uint8) {
 	if vc := z.self.validate(); nil != vc {
 		codes = vc
-	} else if credential, err := z.getter.Get(z.params.zinan.scheme, z.self.id); nil != err {
+	} else if credential, err := z.getter.Get(z.params.zinan.scheme, z.params.id); nil != err {
 		codes = append(codes, codeGetCredentialError)
 	} else {
 		z.credential = credential
@@ -67,24 +69,24 @@ func (z *zinan) sign() (signature string, codes []uint8) {
 	z.signed = z.self.signed()
 	z.scope = z.self.scope()
 
-	request := new(strings.Builder)
+	req := new(strings.Builder)
 	// 写入方法
-	request.WriteString(z.self.method)
-	request.WriteString(enter)
+	req.WriteString(z.core.method)
+	req.WriteString(enter)
 	// 写入请求地址
-	request.WriteString(z.self.uri)
-	request.WriteString(enter)
+	req.WriteString(z.core.url)
+	req.WriteString(enter)
 	// 写入查询参数
-	request.WriteString(z.self.query)
-	request.WriteString(enter)
+	req.WriteString(z.core.query)
+	req.WriteString(enter)
 	// 写入头
-	request.WriteString(z.self.headers())
-	request.WriteString(enter)
+	req.WriteString(z.self.processedHeaders())
+	req.WriteString(enter)
 	// 写入签名头
-	request.WriteString(z.signed)
-	request.WriteString(enter)
+	req.WriteString(z.signed)
+	req.WriteString(enter)
 	// 写入有效荷载
-	request.WriteString(cryptor.New(z.self.payload).Sha256().Hex())
+	req.WriteString(cryptor.New(z.self.payload).Sha256().Hex())
 
 	sign := new(strings.Builder)
 	// 写入算法名
@@ -97,10 +99,10 @@ func (z *zinan) sign() (signature string, codes []uint8) {
 	sign.WriteString(z.scope)
 	sign.WriteString(enter)
 	// 写入请求
-	sign.WriteString(cryptor.New(request.String()).Sha256().Hex())
+	sign.WriteString(cryptor.New(req.String()).Sha256().Hex())
 
 	secret := cryptor.New(timestamp).Hmac(z.self.secret(z.credential)).String()
-	service := cryptor.New(z.self.service).Hmac(secret).String()
+	service := cryptor.New(z.params.service).Hmac(secret).String()
 	signing := cryptor.New(z.self.request()).Hmac(service).String()
 	signature = cryptor.New(sign.String()).Hmac(signing).Hex()
 
@@ -113,7 +115,7 @@ func (z *zinan) token() (token string, codes []uint8) {
 		codes = _codes
 	} else {
 		// 写入应用编号
-		sb.WriteString(z.self.id)
+		sb.WriteString(z.params.id)
 		sb.WriteString(comma)
 		// 写入作用域
 		sb.WriteString(z.scope)

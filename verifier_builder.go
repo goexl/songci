@@ -6,65 +6,65 @@ import (
 
 type verifierBuilder struct {
 	params *params
-	self   *verifierParams
+	core   *coreParams
 	getter getter
 }
 
 func newVerifierBuilder(params *params, getter getter) *verifierBuilder {
 	return &verifierBuilder{
 		params: params,
-		self:   newVerifierParams(),
+		core:   newCoreParams(),
 		getter: getter,
 	}
 }
 
 func (vb *verifierBuilder) Method(method string) *verifierBuilder {
-	vb.self.method = strings.ToUpper(method)
+	vb.core.method = strings.ToUpper(method)
 
 	return vb
 }
 
 func (vb *verifierBuilder) Get() *verifierBuilder {
-	vb.self.method = methodGet
+	vb.core.method = methodGet
 
 	return vb
 }
 
 func (vb *verifierBuilder) Post() *verifierBuilder {
-	vb.self.method = methodPost
+	vb.core.method = methodPost
 
 	return vb
 }
 
 func (vb *verifierBuilder) Uri(uri string) *verifierBuilder {
-	vb.self.method = methodGet
+	vb.core.method = methodGet
 	values := strings.Split(uri, interrogation)
-	vb.self.uri = values[0]
+	vb.core.url = values[0]
 	if 2 == len(values) {
-		vb.self.query = values[1]
+		vb.core.query = values[1]
 	}
 
 	return vb
 }
 
 func (vb *verifierBuilder) Header(key string, value string) *verifierBuilder {
-	vb.self.headers[key] = value
+	vb.core.headers[key] = value
 
 	return vb
 }
 
 func (vb *verifierBuilder) Headers(headers map[string]string) *verifierBuilder {
-	vb.self.headers = headers
+	vb.core.headers = headers
 
 	return vb
 }
 
 func (vb *verifierBuilder) Payload(payload []byte) *verifierBuilder {
-	vb.self.payload = payload
+	vb.core.payload = payload
 
 	return vb
 }
 
 func (vb *verifierBuilder) Build() *verifier {
-	return newVerifier(vb.params, vb.self, vb.getter)
+	return newVerifier(vb.params, vb.core, vb.getter)
 }

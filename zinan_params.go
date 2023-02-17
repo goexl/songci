@@ -9,11 +9,8 @@ import (
 )
 
 type zinanParams struct {
-	*verifierParams
-
-	id        string
-	service   string
-	product   string
+	core      *coreParams
+	params    *params
 	version   string
 	processed headers
 	_signed   []string
@@ -21,12 +18,10 @@ type zinanParams struct {
 	timestamp int64
 }
 
-func newZinanParams(params *verifierParams) *zinanParams {
+func newZinanParams(params *params, core *coreParams) *zinanParams {
 	return &zinanParams{
-		verifierParams: params,
-
-		product:   unknown,
-		service:   unknown,
+		core:      core,
+		params:    params,
 		version:   "1",
 		timestamp: time.Now().Unix(),
 	}
@@ -34,7 +29,7 @@ func newZinanParams(params *verifierParams) *zinanParams {
 
 func (zp *zinanParams) secret(credential string) string {
 	sb := new(strings.Builder)
-	sb.WriteString(strings.ToUpper(zp.product))
+	sb.WriteString(strings.ToUpper(zp.params.product))
 	sb.WriteString(zp.version)
 	sb.WriteString(credential)
 
@@ -43,7 +38,7 @@ func (zp *zinanParams) secret(credential string) string {
 
 func (zp *zinanParams) request() string {
 	sb := new(strings.Builder)
-	sb.WriteString(strings.ToLower(zp.product))
+	sb.WriteString(strings.ToLower(zp.params.product))
 	sb.WriteString(underline)
 	sb.WriteString(zp.version)
 	sb.WriteString(underline)
@@ -54,7 +49,7 @@ func (zp *zinanParams) request() string {
 
 func (zp *zinanParams) unzipRequest(request string) {
 	values := strings.Split(request, underline)
-	zp.product = values[0]
+	zp.params.product = values[0]
 	zp.version = values[1]
 }
 
@@ -62,7 +57,7 @@ func (zp *zinanParams) scope() string {
 	sb := new(strings.Builder)
 	sb.WriteString(fmt.Sprintf("%d", zp.timestamp))
 	sb.WriteString(slash)
-	sb.WriteString(zp.service)
+	sb.WriteString(zp.params.service)
 	sb.WriteString(slash)
 	sb.WriteString(zp.request())
 
@@ -75,14 +70,14 @@ func (zp *zinanParams) unzipScope(scope string) (codes []uint8) {
 		codes = append(codes, codeTimestampFormatError)
 	} else {
 		zp.timestamp = number
-		zp.service = values[1]
+		zp.params.service = values[1]
 		zp.unzipRequest(values[2])
 	}
 
 	return
 }
 
-func (zp *zinanParams) headers() (headers string) {
+func (zp *zinanParams) processedHeaders() (headers string) {
 	keys := make([]string, 0, len(zp.processed))
 	for k := range zp.processed {
 		keys = append(keys, k)
@@ -114,8 +109,8 @@ func (zp *zinanParams) unzipSigned(signed string) {
 func (zp *zinanParams) validate() (codes []uint8) {
 	hasContentType := false
 	hasHost := false
-	zp.processed = make(headers, len(zp.verifierParams.headers))
-	for key, value := range zp.verifierParams.headers {
+	zp.processed = make(headers, len(zp.core.headers))
+	for key, value := range zp.core.headers {
 		newKey := strings.ToLower(key)
 		if contentType == newKey {
 			hasContentType = true
