@@ -1,7 +1,8 @@
 package songci
 
 const (
-	curl       = "curl"
-	curlData   = "--data"
-	curlHeader = "--header"
+	curl        = "curl"
+	curlRequest = "--request"
+	curlData    = "--data"
+	curlHeader  = "--header"
 )

@@ -7,7 +7,7 @@ type authorizer interface {
 
 	sign() (signature string, codes []uint8)
 
-	token() (token string, codes []uint8)
+	credential() (token string, codes []uint8)
 
 	signature() string
 }

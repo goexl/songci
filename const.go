@@ -14,5 +14,6 @@ const (
 	equal         = "="
 	slash         = "/"
 	space         = " "
+	quotes        = "\""
 	authorization = "Authorization"
 )

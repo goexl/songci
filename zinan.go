@@ -20,7 +20,7 @@ type zinan struct {
 	scope          string
 	signedHeaders  string
 	finalSignature string
-	credential     string
+	secret         string
 }
 
 func newZinan(params *params, core *coreParams, self *zinanParams, getter getter) *zinan {
@@ -55,10 +55,10 @@ func (z *zinan) unzip(auth string) (codes []uint8) {
 func (z *zinan) sign() (signature string, codes []uint8) {
 	if vc := z.self.validate(); nil != vc {
 		codes = vc
-	} else if credential, err := z.getter.Get(z.params.zinan.scheme, z.params.id); nil != err {
+	} else if secret, err := z.getter.Get(z.params.zinan.scheme, z.params.id); nil != err {
 		codes = append(codes, codeGetCredentialError)
 	} else {
-		z.credential = credential
+		z.secret = secret
 	}
 	if nil != codes {
 		return
@@ -103,15 +103,15 @@ func (z *zinan) sign() (signature string, codes []uint8) {
 	// 写入请求
 	sign.WriteString(cryptor.New(req.String()).Sha256().Hex())
 
-	secret := cryptor.New(timestamp).Hmac(z.self.secret(z.credential)).String()
-	svc := cryptor.New(z.params.service).Hmac(secret).String()
-	signing := cryptor.New(z.self.request()).Hmac(svc).String()
+	_timestamp := cryptor.New(timestamp).Hmac(z.self.secret(z.secret)).String()
+	_service := cryptor.New(z.params.service).Hmac(_timestamp).String()
+	signing := cryptor.New(z.self.request()).Hmac(_service).String()
 	signature = cryptor.New(sign.String()).Hmac(signing).Hex()
 
 	return
 }
 
-func (z *zinan) token() (token string, codes []uint8) {
+func (z *zinan) credential() (token string, codes []uint8) {
 	sb := new(strings.Builder)
 	if signature, _codes := z.sign(); nil != _codes {
 		codes = _codes

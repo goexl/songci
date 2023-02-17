@@ -35,7 +35,8 @@ func (c *coder) String() (code string, err error) {
 func (c *coder) curl() (command string, err error) {
 	cmd := new(commands)
 	cmd.append(curl)
-	cmd.append(c.bashEscape(c.core.method))
+	cmd.append(curlRequest)
+	cmd.append(c.core.method)
 	if nil != c.core.payload {
 		cmd.append(curlData)
 		cmd.append(c.bashEscape(string(c.core.payload)))
