@@ -3,7 +3,6 @@ package songci
 type algorithmBuilder struct {
 	*builder
 
-	name      string
 	algorithm *algorithm
 }
 
@@ -15,8 +14,8 @@ func newAlgorithmBuilder(builder *builder, algorithm *algorithm) *algorithmBuild
 	}
 }
 
-func (ab *algorithmBuilder) Name(name string) *algorithmBuilder {
-	ab.algorithm.scheme = name
+func (ab *algorithmBuilder) Scheme(scheme string) *algorithmBuilder {
+	ab.algorithm.scheme = scheme
 
 	return ab
 }
