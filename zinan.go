@@ -37,16 +37,16 @@ func (z *zinan) scheme() string {
 	return z.params.zinan.scheme
 }
 
-func (z *zinan) unzip(auth string) (codes []uint8) {
-	values := strings.Split(auth, comma)
+func (z *zinan) resolve(authorization string) (codes []uint8) {
+	values := strings.Split(authorization, comma)
 	z.params.id = strings.TrimSpace(strings.TrimPrefix(values[0], z.params.zinan.scheme))
-	if _codes := z.self.unzipScope(values[1]); nil != _codes {
+	if _codes := z.self.resolveScope(values[1]); nil != _codes {
 		codes = _codes
 	} else {
 		timestamp := time.Unix(z.self.timestamp, 0)
 		checked := time.Since(timestamp).Abs() <= z.params.timeout
 		codes = gox.If(!checked, append(codes, codeTimeout))
-		z.self.unzipSigned(values[2])
+		z.self.resolveSigned(values[2])
 		z.finalSignature = values[3]
 	}
 

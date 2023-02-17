@@ -48,7 +48,7 @@ func (zp *zinanParams) request() string {
 	return sb.String()
 }
 
-func (zp *zinanParams) unzipRequest(request string) {
+func (zp *zinanParams) resolveRequest(request string) {
 	values := strings.Split(request, underline)
 	zp.params.service = values[0]
 	zp.version = values[1]
@@ -65,14 +65,14 @@ func (zp *zinanParams) scope() string {
 	return sb.String()
 }
 
-func (zp *zinanParams) unzipScope(scope string) (codes []uint8) {
+func (zp *zinanParams) resolveScope(scope string) (codes []uint8) {
 	values := strings.Split(scope, slash)
 	if number, pe := strconv.ParseInt(values[0], 10, 64); nil != pe {
 		codes = append(codes, codeTimestampFormatError)
 	} else {
 		zp.timestamp = number
 		zp.params.product = values[1]
-		zp.unzipRequest(values[2])
+		zp.resolveRequest(values[2])
 	}
 
 	return
@@ -103,7 +103,7 @@ func (zp *zinanParams) signedHeaders() (signed string) {
 	return
 }
 
-func (zp *zinanParams) unzipSigned(signed string) {
+func (zp *zinanParams) resolveSigned(signed string) {
 	zp.signed = strings.Split(signed, semicolon)
 }
 

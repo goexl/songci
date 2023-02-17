@@ -21,8 +21,8 @@ func newVerifier(params *params, core *coreParams, getter getter) *verifier {
 	}
 }
 
-func (v *verifier) Verify(auth string) (product string, service string, codes []uint8) {
-	values := strings.Split(auth, space)
+func (v *verifier) Verify(authorization string) (product string, service string, codes []uint8) {
+	values := strings.Split(authorization, space)
 	switch values[0] {
 	case v.params.zinan.scheme:
 		v.authorizer = newZinan(v.params, v.core, newZinanParams(v.params, v.core), v.getter)
@@ -33,7 +33,7 @@ func (v *verifier) Verify(auth string) (product string, service string, codes []
 		return
 	}
 
-	if uc := v.authorizer.unzip(auth); nil != uc {
+	if uc := v.authorizer.resolve(authorization); nil != uc {
 		codes = uc
 	} else if signature, sc := v.authorizer.sign(); nil != sc {
 		codes = sc
