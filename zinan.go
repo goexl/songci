@@ -89,7 +89,7 @@ func (z *zinan) sign() (signature string, codes []uint8) {
 	req.WriteString(z.signed)
 	req.WriteString(enter)
 	// 写入有效荷载
-	req.WriteString(cryptor.New(z.self.payload).Sha256().Hex())
+	req.WriteString(cryptor.New(z.self.payload).Sha().Build().Hex())
 
 	sign := new(strings.Builder)
 	// 写入算法名
@@ -102,12 +102,12 @@ func (z *zinan) sign() (signature string, codes []uint8) {
 	sign.WriteString(z.scope)
 	sign.WriteString(enter)
 	// 写入请求
-	sign.WriteString(cryptor.New(req.String()).Sha256().Hex())
+	sign.WriteString(cryptor.New(req.String()).Sha().Build().Hex())
 
-	_timestamp := cryptor.New(timestamp).Hmac(z.self.secret(z.secret)).String()
-	_service := cryptor.New(z.params.service).Hmac(_timestamp).String()
-	signing := cryptor.New(z.self.request()).Hmac(_service).String()
-	signature = cryptor.New(sign.String()).Hmac(signing).Hex()
+	_timestamp := cryptor.New(timestamp).Hmac(z.self.secret(z.secret)).Build().String()
+	_service := cryptor.New(z.params.service).Hmac(_timestamp).Build().String()
+	signing := cryptor.New(z.self.request()).Hmac(_service).Build().String()
+	signature = cryptor.New(sign.String()).Hmac(signing).Build().Hex()
 
 	return
 }
