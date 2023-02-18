@@ -24,6 +24,10 @@ func (b *builder) Zinan() *algorithmBuilder {
 	return newAlgorithmBuilder(b, b.params.zinan)
 }
 
+func (b *builder) Basic() *algorithmBuilder {
+	return newAlgorithmBuilder(b, b.params.basic)
+}
+
 func (b *builder) Build() *Songci {
 	return newSongci(b.params)
 }

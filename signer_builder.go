@@ -67,3 +67,7 @@ func (sb *signerBuilder) Service(service string) *signerBuilder {
 func (sb *signerBuilder) Zinan() *zinanBuilder {
 	return newZinanBuilder(sb.params, sb.core, sb.getter)
 }
+
+func (sb *signerBuilder) Basic() *basicBuilder {
+	return newBasicBuilder(sb.params, sb.core, sb.getter)
+}
