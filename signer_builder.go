@@ -14,12 +14,6 @@ func newSignerBuilder(params *params, getter getter) *signerBuilder {
 	}
 }
 
-func (sb *signerBuilder) Host(host string) *signerBuilder {
-	sb.core.host = host
-
-	return sb
-}
-
 func (sb *signerBuilder) Get(uri string) *signerBuilder {
 	sb.core.method = methodGet
 	sb.core.uri = uri

@@ -37,8 +37,18 @@ func (z *zinan) scheme() string {
 	return z.params.zinan.scheme
 }
 
-func (z *zinan) resolve(authorization string) (codes []uint8) {
+func (z *zinan) resolve(authorization string) (codes codes) {
 	values := strings.Split(authorization, comma)
+	if zinanAuthorizationSize != len(values) {
+		codes.Add(1)
+	} else {
+		codes = z.resolveValues(values)
+	}
+
+	return
+}
+
+func (z *zinan) resolveValues(values []string) (codes codes) {
 	z.params.id = strings.TrimSpace(strings.TrimPrefix(values[0], z.params.zinan.scheme))
 	if _codes := z.self.resolveScope(values[1]); nil != _codes {
 		codes = _codes
@@ -53,7 +63,7 @@ func (z *zinan) resolve(authorization string) (codes []uint8) {
 	return
 }
 
-func (z *zinan) sign() (signature string, codes []uint8) {
+func (z *zinan) sign() (signature string, codes codes) {
 	if vc := z.self.validate(); nil != vc {
 		codes = vc
 	} else if secret, err := z.getter.Get(z.params.zinan.scheme, z.params.id); nil != err {
@@ -112,7 +122,7 @@ func (z *zinan) sign() (signature string, codes []uint8) {
 	return
 }
 
-func (z *zinan) token() (token string, codes []uint8) {
+func (z *zinan) token() (token string, codes codes) {
 	sb := new(strings.Builder)
 	if signature, _codes := z.sign(); nil != _codes {
 		codes = _codes

@@ -17,7 +17,7 @@ func newSigner(core *coreParams, authorizer authorizer) *signer {
 	}
 }
 
-func (s *signer) Credential() (string, []uint8) {
+func (s *signer) Credential() (string, codes) {
 	return s.authorizer.token()
 }
 
@@ -25,7 +25,7 @@ func (s *signer) Scheme() string {
 	return s.authorizer.scheme()
 }
 
-func (s *signer) Authorization() (authorization string, codes []uint8) {
+func (s *signer) Authorization() (authorization string, codes codes) {
 	if "" != s.authorization {
 		authorization = s.authorization
 	} else if token, tc := s.Credential(); nil != tc {

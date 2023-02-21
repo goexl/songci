@@ -49,7 +49,17 @@ func (vb *verifierBuilder) Header(key string, value string) *verifierBuilder {
 }
 
 func (vb *verifierBuilder) Headers(headers map[string]string) *verifierBuilder {
-	vb.core.headers = headers
+	for key, value := range headers {
+		vb.core.headers[key] = value
+	}
+
+	return vb
+}
+
+func (vb *verifierBuilder) MultiHeaders(headers map[string][]string) *verifierBuilder {
+	for key, value := range headers {
+		vb.core.headers[key] = strings.Join(value, space)
+	}
 
 	return vb
 }

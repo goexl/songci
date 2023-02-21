@@ -14,6 +14,12 @@ func newCodeBuilder(core *coreParams, authFun authFun) *codeBuilder {
 	}
 }
 
+func (cb *codeBuilder) Host(host string) *codeBuilder {
+	cb.core.host = host
+
+	return cb
+}
+
 func (cb *codeBuilder) Http() *codeBuilder {
 	cb.params.scheme = http
 

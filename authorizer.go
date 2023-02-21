@@ -3,11 +3,11 @@ package songci
 type authorizer interface {
 	scheme() string
 
-	resolve(authorization string) (codes []uint8)
+	resolve(authorization string) (codes codes)
 
-	sign() (signature string, codes []uint8)
+	sign() (signature string, codes codes)
 
-	token() (token string, codes []uint8)
+	token() (token string, codes codes)
 
 	check(signature string) bool
 }

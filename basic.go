@@ -30,7 +30,7 @@ func (b *basic) scheme() string {
 	return b.params.basic.scheme
 }
 
-func (b *basic) resolve(authorization string) (codes []uint8) {
+func (b *basic) resolve(authorization string) (codes codes) {
 	values := strings.Split(authorization, comma)
 	b.params.id = strings.TrimSpace(strings.TrimPrefix(values[0], b.params.basic.scheme))
 	if signature, de := base64.StdEncoding.DecodeString(values[1]); nil != de {
@@ -42,14 +42,14 @@ func (b *basic) resolve(authorization string) (codes []uint8) {
 	return
 }
 
-func (b *basic) sign() (signature string, codes []uint8) {
+func (b *basic) sign() (signature string, codes codes) {
 	sign := fmt.Sprintf("%s:%s", b.params.id, b.self.password)
 	signature = base64.StdEncoding.EncodeToString([]byte(sign))
 
 	return
 }
 
-func (b *basic) token() (token string, codes []uint8) {
+func (b *basic) token() (token string, codes codes) {
 	if signature, _codes := b.sign(); nil != _codes {
 		codes = _codes
 	} else {

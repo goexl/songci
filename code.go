@@ -6,7 +6,7 @@ const (
 	codeGetCredentialError uint8 = 3
 
 	codeNoContentTypeHeader uint8 = 10
-	codeNoHostHeader        uint8 = 11
+	codeNoUserAgentHeader   uint8 = 11
 
 	codeTimestampFormatError uint8 = 20
 	codeTimeout              uint8 = 21

@@ -21,7 +21,7 @@ func newVerifier(params *params, core *coreParams, getter getter) *verifier {
 	}
 }
 
-func (v *verifier) Verify(authorization string) (product string, service string, codes []uint8) {
+func (v *verifier) Verify(authorization string) (product string, service string, codes codes) {
 	values := strings.Split(authorization, space)
 	switch values[0] {
 	case v.params.zinan.scheme:

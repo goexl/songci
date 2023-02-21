@@ -4,7 +4,7 @@ const (
 	product       = "product"
 	service       = "service"
 	contentType   = "content-type"
-	host          = "host"
+	userAgent     = "user-agent"
 	interrogation = "?"
 	semicolon     = ";"
 	enter         = "\n"
@@ -14,6 +14,7 @@ const (
 	equal         = "="
 	slash         = "/"
 	space         = " "
-	quotes        = "\""
 	authorization = "Authorization"
+
+	zinanAuthorizationSize = 4
 )

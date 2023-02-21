@@ -12,7 +12,6 @@ type zinanParams struct {
 	core      *coreParams
 	params    *params
 	version   string
-	processed headers
 	signed    []string
 	payload   []byte
 	timestamp int64
@@ -23,7 +22,7 @@ func newZinanParams(params *params, core *coreParams) *zinanParams {
 		core:      core,
 		params:    params,
 		version:   "1",
-		signed:    []string{contentType, host},
+		signed:    []string{contentType, userAgent},
 		timestamp: time.Now().Unix(),
 	}
 }
@@ -65,7 +64,7 @@ func (zp *zinanParams) scope() string {
 	return sb.String()
 }
 
-func (zp *zinanParams) resolveScope(scope string) (codes []uint8) {
+func (zp *zinanParams) resolveScope(scope string) (codes codes) {
 	values := strings.Split(scope, slash)
 	if number, pe := strconv.ParseInt(values[0], 10, 64); nil != pe {
 		codes = append(codes, codeTimestampFormatError)
@@ -79,17 +78,12 @@ func (zp *zinanParams) resolveScope(scope string) (codes []uint8) {
 }
 
 func (zp *zinanParams) processedHeaders() (headers string) {
-	keys := make([]string, 0, len(zp.processed))
-	for k := range zp.processed {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
-
+	sort.Strings(zp.signed)
 	sb := new(strings.Builder)
-	for _, key := range keys {
+	for _, key := range zp.signed {
 		sb.WriteString(key)
 		sb.WriteString(equal)
-		sb.WriteString(zp.processed[key])
+		sb.WriteString(zp.core.headers[key])
 		sb.WriteString(semicolon)
 	}
 
@@ -107,26 +101,26 @@ func (zp *zinanParams) resolveSigned(signed string) {
 	zp.signed = strings.Split(signed, semicolon)
 }
 
-func (zp *zinanParams) validate() (codes []uint8) {
+func (zp *zinanParams) validate() (codes codes) {
 	hasContentType := false
-	hasHost := false
-	zp.processed = make(headers, len(zp.core.headers))
+	hasUserAgent := false
 	for key, value := range zp.core.headers {
-		newKey := strings.ToLower(key)
-		if contentType == newKey {
+		zp.core.headers[strings.ToLower(key)] = value
+		delete(zp.core.headers, key)
+
+		if contentType == key {
 			hasContentType = true
 		}
-		if host == newKey {
-			hasHost = true
+		if userAgent == key {
+			hasUserAgent = true
 		}
-		zp.processed[newKey] = value
 	}
 
 	if !hasContentType {
-		codes = append(codes, codeNoContentTypeHeader)
+		codes.Add(codeNoContentTypeHeader)
 	}
-	if !hasHost {
-		codes = append(codes, codeNoHostHeader)
+	if !hasUserAgent {
+		codes.Add(codeNoUserAgentHeader)
 	}
 
 	return

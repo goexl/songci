@@ -9,5 +9,7 @@ type coreParams struct {
 }
 
 func newCoreParams() *coreParams {
-	return new(coreParams)
+	return &coreParams{
+		headers: make(headers),
+	}
 }

@@ -1,3 +1,3 @@
 package songci
 
-type authFun func() (string, []uint8)
+type authFun func() (string, codes)
