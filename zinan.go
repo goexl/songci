@@ -123,10 +123,10 @@ func (z *zinan) sign() (signature string, codes codes) {
 }
 
 func (z *zinan) token() (token string, codes codes) {
-	sb := new(strings.Builder)
 	if signature, _codes := z.sign(); nil != _codes {
 		codes = _codes
 	} else {
+		sb := new(strings.Builder)
 		// 写入应用编号
 		sb.WriteString(z.params.id)
 		sb.WriteString(comma)
